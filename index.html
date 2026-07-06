@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Screener Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .active-tab { background-color: #3b82f6; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-white min-h-screen p-4 flex flex-col">
+        <div class="text-2xl font-bold mb-8 flex items-center gap-2">
+            <i class="fas fa-robot text-blue-400"></i>
+            <span>HR-LLM Pro</span>
+        </div>
+        
+        <nav class="space-y-2 flex-grow">
+            <button onclick="showTab('home')" id="tab-home" class="w-full text-left p-3 rounded-lg flex items-center gap-3 active-tab transition">
+                <i class="fas fa-home w-5"></i> Home
+            </button>
+            <button onclick="showTab('upload')" id="tab-upload" class="w-full text-left p-3 rounded-lg flex items-center gap-3 hover:bg-slate-800 transition">
+                <i class="fas fa-file-upload w-5"></i> Upload Resume
+            </button>
+            <button onclick="showTab('dashboard')" id="tab-dashboard" class="w-full text-left p-3 rounded-lg flex items-center gap-3 hover:bg-slate-800 transition">
+                <i class="fas fa-chart-pie w-5"></i> Dashboard
+            </button>
+            <button onclick="showTab('chat')" id="tab-chat" class="w-full text-left p-3 rounded-lg flex items-center gap-3 hover:bg-slate-800 transition">
+                <i class="fas fa-comments w-5"></i> AI Assistant
+            </button>
+        </nav>
+
+        <div class="mt-auto p-2 border-t border-slate-700 pt-4">
+            <button onclick="clearData()" class="w-full text-sm text-red-400 hover:text-red-300 flex items-center gap-2">
+                <i class="fas fa-trash"></i> Reset Data
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-8 overflow-y-auto">
+        
+        <!-- Home Tab -->
+        <section id="content-home" class="tab-content active">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Welcome to AI Resume Screener</h1>
+                <p class="text-lg text-slate-600 mb-8">Efficiently analyze resumes using RAG and Groq's Llama-3 models. Extract skills, match against job descriptions, and chat with candidate data.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <i class="fas fa-microchip text-3xl text-blue-500 mb-4"></i>
+                        <h3 class="font-bold text-lg mb-2">Automated Skill Extraction</h3>
+                        <p class="text-sm text-slate-500">LLM-powered identification of technical and soft skills from any document format.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <i class="fas fa-bullseye text-3xl text-green-500 mb-4"></i>
+                        <h3 class="font-bold text-lg mb-2">Intelligent Matching</h3>
+                        <p class="text-sm text-slate-500">Semantic RAG technology to find the best internal job fit for every candidate.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                        <i class="fas fa-brain text-3xl text-purple-500 mb-4"></i>
+                        <h3 class="font-bold text-lg mb-2">AI HR Consultant</h3>
+                        <p class="text-sm text-slate-500">Ask the chatbot about specific candidates or compare multiple profiles instantly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Tab -->
+        <section id="content-upload" class="tab-content">
+            <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-file-medical text-blue-500"></i> New Candidate Analysis
+                </h2>
+                
+                <form id="analyzeForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Candidate Full Name</label>
+                        <input type="text" id="candName" required class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. John Doe">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-blue-400 transition cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                            <input type="file" id="fileInput" class="hidden" accept=".pdf,.txt">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-slate-400 mb-2"></i>
+                            <p class="text-xs text-slate-500">Upload PDF or TXT</p>
+                            <p id="fileNameDisplay" class="text-xs font-bold text-blue-600 mt-1"></p>
+                        </div>
+                        <div class="flex items-center justify-center text-slate-400 font-bold italic">OR</div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Paste Resume Text</label>
+                        <textarea id="resumeText" rows="6" class="w-full p-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Paste resume content here if no file..."></textarea>
+                    </div>
+
+                    <button type="submit" id="analyzeBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                        <span>Start AI Analysis</span>
+                        <div id="loader" class="hidden animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Dashboard Tab -->
+        <section id="content-dashboard" class="tab-content">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Candidate Dashboard (3 Max)</h2>
+                    <span id="candidateCount" class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold">0 / 3</span>
+                </div>
+                
+                <div id="candidatesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-slate-800">
+                    <!-- Cards injection -->
+                    <div class="col-span-full text-center py-20 text-slate-400">
+                        <i class="fas fa-folder-open text-5xl mb-4"></i>
+                        <p>No candidates analyzed yet.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Tab -->
+        <section id="content-chat" class="tab-content">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-100 flex flex-col h-[70vh]">
+                <div class="p-4 border-b bg-slate-50 rounded-t-2xl font-bold flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    AI HR Assistant
+                </div>
+                
+                <div id="chatMessages" class="flex-grow p-6 overflow-y-auto space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i class="fas fa-robot"></i></div>
+                        <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none text-sm max-w-[80%]">
+                            Hello! I can answer questions based on the resumes you've uploaded. Ask me who's best for a role or what skills someone has!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t">
+                    <div class="flex gap-2">
+                        <input type="text" id="chatInput" class="flex-grow p-3 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="Type your HR query...">
+                        <button onclick="sendChat()" class="bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
